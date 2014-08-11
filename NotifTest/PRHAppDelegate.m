@@ -8,11 +8,31 @@
 
 #import "PRHAppDelegate.h"
 
+@interface PRHAppDelegate ()
+- (IBAction)sendNotifications:(id)sender;
+
+@end
+
 @implementation PRHAppDelegate
 
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
-{
-	// Insert code here to initialize your application
+- (void)awakeFromNib {
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(notified) name:@"foo" object:nil];
+	[[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(notified) name:@"foo" object:nil];
+	[[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(notified) name:@"foo" object:nil];
+}
+
+- (void) notified {
+	NSLog(@"Notified");
+}
+
+- (IBAction)sendNotifications:(id)sender {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"foo" object:nil];
+	NSLog(@"Sent via default local");
+	[[[NSWorkspace sharedWorkspace] notificationCenter] postNotificationName:@"foo" object:nil];
+	NSLog(@"Sent via NSWorkspace local");
+	[[NSDistributedNotificationCenter defaultCenter] postNotificationName:@"foo" object:nil];
+	NSLog(@"Sent via default distributed");
+	NSLog(@"Done sending");
 }
 
 @end
